@@ -528,14 +528,6 @@ function township_get_main($db, $source)
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 	}
 	
-	$sql = "UPDATE `" . $config['dbprefix'] . "commons_commonscat` SET `online`='1' WHERE `online`='2'";
-	$db->query($sql);
-	
-	if($config['log'] > 2)
-	{
-		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
-	}
-	
 	
 	$articles = township_get_articles_list($db, $source);
 	$features = township_get_feature_list($db, $source);
