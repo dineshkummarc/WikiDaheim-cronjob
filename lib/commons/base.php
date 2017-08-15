@@ -630,32 +630,6 @@ function commons_get_main(&$db, $api_url)
 	{
 		$features = commons_get_feature_cat($db, $api_url);
 		
-//		$sql = "DELETE FROM `" . $config['dbprefix'] . "commons_gemeide_feature` WHERE `online`='1'";
-		$sql = "UPDATE `" . $config['dbprefix'] . "commons_gemeide_feature` SET `online`='0' WHERE `online`='1'";
-		$db->query($sql);
-
-		if($config['log'] > 2)
-		{
-			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
-		}
-		
-		$sql = "UPDATE `" . $config['dbprefix'] . "commons_gemeide_feature` SET `online`='1' WHERE `online`='2'";
-		$db->query($sql);
-	
-		if($config['log'] > 2)
-		{
-			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
-		}
-		
-//		$sql = "DELETE FROM `" . $config['dbprefix'] . "commons_photos` WHERE `online`='1'";
-		$sql = "UPDATE `" . $config['dbprefix'] . "commons_photos` SET `online`='0' WHERE `online`='1'";
-		$db->query($sql);
-
-		if($config['log'] > 2)
-		{
-			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
-		}
-		
 		$sql = "UPDATE `" . $config['dbprefix'] . "commons_photos` SET `online`='1' WHERE `online`='2'";
 		$db->query($sql);
 	
@@ -700,6 +674,15 @@ function commons_get_main(&$db, $api_url)
 			// read data and save to db
 			$continue = commons_get_fotos($db, $url."=-||&cmcontinue=".$continue, $api_url, $category, $category, $features, 4);
 		} // end api loop
+		
+		// clean up
+		$sql = "DELETE FROM `" . $config['dbprefix'] . "commons_photos` WHERE `commons_gemeinde` LIKE '$category' AND `online`!='2' ";
+		$db->query($sql);
+
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
 		
 		// if category in $features
 		commons_feature_exists($db, $features, $category);
