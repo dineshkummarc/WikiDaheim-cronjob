@@ -234,14 +234,14 @@ function commons_get_feature_cat($db, $api_url)
 		$res->close();
 	}
 	
-	$sql = "DELETE FROM `" . $config['dbprefix'] . "commons_feature` WHERE `online` = 0";
+	$sql = "DELETE FROM `" . $config['dbprefix'] . "commons_feature` WHERE `online` = 1";
 	$db->query($sql);
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 	}
 	
-	$sql = "DELETE FROM `" . $config['dbprefix'] . "commons_feature_photos` WHERE `online` = 0";
+	$sql = "DELETE FROM `" . $config['dbprefix'] . "commons_feature_photos` WHERE `online` = 1";
 	$db->query($sql);
 	if($config['log'] > 2)
 	{
