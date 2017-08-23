@@ -168,22 +168,8 @@ function commons_get_feature_cat($db, $api_url)
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t commons_get_feature_cat()");
 	}
 	
-	$sql = "UPDATE `" . $config['dbprefix'] . "commons_feature` SET `online`=0 WHERE 1";
-	$db->query($sql);
-	if($config['log'] > 2)
-	{
-		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
-	}
 	
-	$sql = "UPDATE `" . $config['dbprefix'] . "commons_feature_photos` SET `online`=1 WHERE 1";
-	$db->query($sql);
-	if($config['log'] > 2)
-	{
-		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
-	}
-	
-	
-	$sql = "SELECT `feature` FROM `" . $config['dbprefix'] . "commons_photos_features` WHERE `online` >= 1";
+	$sql = "SELECT `feature` FROM `" . $config['dbprefix'] . "commons_photos_features` WHERE `online` = 1 OR `online` = 3";
 	$res = $db->query($sql);
 	if($config['log'] > 2)
 	{
@@ -199,7 +185,22 @@ function commons_get_feature_cat($db, $api_url)
 	$res->close();
 	
 	foreach($features as $feature)
-	{	
+	{
+		$sql = "UPDATE `" . $config['dbprefix'] . "commons_feature` SET `online`=1 WHERE `feature` LIKE '".$feature."'";
+		$db->query($sql);
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
+	
+		$sql = "UPDATE `" . $config['dbprefix'] . "commons_feature_photos` SET `online`=1 WHERE `feature` LIKE '".$feature."'";
+		$db->query($sql);
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
+		
+		
 		$sql = "SELECT `alias` FROM `" . $config['dbprefix'] . "commons_photos_features_alias` WHERE `feature` LIKE '".$feature."'";
 		$res = $db->query($sql);
 	
@@ -232,6 +233,33 @@ function commons_get_feature_cat($db, $api_url)
 		}
 	
 		$res->close();
+		
+		// set online for feature
+		$sql = "SELECT `online` FROM `" . $config['dbprefix'] . "commons_photos_features` WHERE `feature` LIKE '".$feature."'";
+		$res = $db->query($sql);
+	
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
+		
+		$row = $res->fetch_array(MYSQLI_ASSOC);
+		$online = $row['online'];
+		
+		if($online == 1)
+		{
+			$sql = "UPDATE `" . $config['dbprefix'] . "commons_photos_features` SET `online` = 2 WHERE `feature` LIKE '".$feature."'";
+		}
+		else
+		{
+			$sql = "UPDATE `" . $config['dbprefix'] . "commons_photos_features` SET `online` = 4 WHERE `feature` LIKE '".$feature."'";
+		}
+		
+		$db->query($sql);
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
 	}
 	
 	$sql = "DELETE FROM `" . $config['dbprefix'] . "commons_feature` WHERE `online` = 1";
@@ -247,8 +275,6 @@ function commons_get_feature_cat($db, $api_url)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 	}
-	
-	return $features;
 }
 
 function commons_get_feature_cat_db($db)
@@ -628,11 +654,10 @@ function commons_get_main(&$db, $api_url)
 	
 	if(count($categorys) == 0)
 	{
-		$features = commons_get_feature_cat($db, $api_url);
+		commons_get_feature_cat($db, $api_url);
 		
 		$sql = "UPDATE `" . $config['dbprefix'] . "commons_photos` SET `online`='1' WHERE `online`='2'";
 		$db->query($sql);
-	
 		if($config['log'] > 2)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -640,7 +665,6 @@ function commons_get_main(&$db, $api_url)
 		
 		$sql = "UPDATE `" . $config['dbprefix'] . "commons_commonscat` SET `online`='2' WHERE `online`='1'";
 		$db->query($sql);
-	
 		if($config['log'] > 2)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -648,10 +672,7 @@ function commons_get_main(&$db, $api_url)
 		
 		$categorys = commons_get_categorys_list($db);
 	}
-	else
-	{
-		$features = commons_get_feature_cat_db($db);
-	}
+	$features = commons_get_feature_cat_db($db);
 	
 	foreach($categorys as $category)
 	{
@@ -694,6 +715,27 @@ function commons_get_main(&$db, $api_url)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 		}
+	}
+	
+	$sql = "UPDATE `" . $config['dbprefix'] . "commons_photos_features` SET `online` = 1 WHERE `online` = 2 OR `online` = 4";
+	$db->query($sql);
+	if($config['log'] > 2)
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+	}
+	
+	$sql = "UPDATE `" . $config['dbprefix'] . "commons_feature` SET `online`=1 WHERE 1";
+	$db->query($sql);
+	if($config['log'] > 2)
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+	}
+
+	$sql = "UPDATE `" . $config['dbprefix'] . "commons_feature_photos` SET `online`=1 WHERE 1";
+	$db->query($sql);
+	if($config['log'] > 2)
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 	}
 }
 
