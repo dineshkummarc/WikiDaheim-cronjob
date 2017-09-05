@@ -472,9 +472,14 @@ function commons_get_fotos($db, $url, $api_url, $category, $main_category, $feat
 			}
 			else if($type == "file")
 			{
-				if(($max == 3)||(substr($title, -4, -1)===".og"))
+				if(
+					($max == 3) ||
+					(substr($title, -4, -1)===".og") ||
+					(substr($title, -4)==".wav") ||
+					(substr($title, -5)==".flac") ||
+					(substr($title, -5)==".opus")
+				)
 				{
-					//$title = $db->real_escape_string($title);
 					$category = $db->real_escape_string($category);
 					$main_category = $db->real_escape_string($main_category);
 					$sql = "SELECT `feature` FROM `" . $config['dbprefix'] . "commons_feature_photos` WHERE `photo` LIKE '$title' AND `online` >= 1";
