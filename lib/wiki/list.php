@@ -234,7 +234,58 @@ function wiki_to_dbhtml($data)
 
 function str_to_data($data)
 {
+	// comment
 	$data = preg_replace("/&lt;(.*)&gt;/Uis","",$data);
+	
+	// BDA Objekt Ref
+	preg_match_all('/{{BDA Objekt Ref\|([0-9])\w+\|text=.*?}}/', $data, $matches, PREG_SET_ORDER, 0);
+	foreach($matches as $matche)
+	{
+		$matche = $matche[0];
+		$replace = explode("=",$matche);
+		$pos1 = stripos($replace[1], "}}");
+		if ($pos1 !== false)
+		{
+			$replace = substr($replace[1],0,$pos1);
+		}
+		$data = str_replace($matche, $replace, $data);
+	}
+	
+	preg_match_all('/{{BDA Objekt Ref\|([0-9])\w+\|.*?\|text=gemeinde}}/', $data, $matches, PREG_SET_ORDER, 0);
+	foreach($matches as $matche)
+	{
+		$matche = $matche[0];
+		$replace = explode("|",$matche);
+		$replace = $replace[2];
+		$data = str_replace($matche, $replace, $data);
+	}
+	
+	// Coordinate
+	preg_match_all('/{{Coordinate\|.*?}}/', $data, $matches, PREG_SET_ORDER, 0);
+	foreach($matches as $matche)
+	{
+		$matche = $matche[0];
+		$replace = explode("name=",$matche);
+		if(count($replace)==2)
+		{
+			$pos1 = stripos($replace[1], "}}");
+			if ($pos1 !== false)
+			{
+				$replace = substr($replace[1],0,$pos1);
+			}
+			$pos1 = stripos($replace[1], "|");
+			if ($pos1 !== false)
+			{
+				$replace = substr($replace[1],0,$pos1);
+			}
+		}
+		else
+		{
+			$replace = "";
+		}
+		$data = str_replace($matche, $replace, $data);
+	}
+	
 	return $data;
 }
 
