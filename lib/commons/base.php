@@ -12,9 +12,7 @@ function commons_get_categorys_list($db)
 	}
 	
 	$sql = "SELECT `commons_gemeinde`, `online` FROM `" . $config['dbprefix'] . "commons_commonscat` WHERE `online` >= 2 ORDER BY `online` DESC";
-	
 	$res = $db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -43,7 +41,6 @@ function commons_get_feature_alias_cat($db, $url, $base_category, $api_url, $fea
 	$user_agent = "WikiDaheim/0.0.0 (wikidaheim.at)";
 	ini_set('user_agent', $user_agent);
 	$str = @file_get_contents($url);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t commons_get_feature_alias_cat: \t ".$url);
@@ -51,7 +48,11 @@ function commons_get_feature_alias_cat($db, $url, $base_category, $api_url, $fea
 	
 	if($str === FALSE)
 	{
-		return "";
+		if($config['log'] > 0)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t connection error \t commons_get_feature_alias_cat: \t ".$url);
+		}
+		return "connection error";
 	}
 	else
 	{
@@ -168,7 +169,6 @@ function commons_get_feature_cat($db, $api_url)
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t commons_get_feature_cat()");
 	}
 	
-	
 	$sql = "SELECT `feature` FROM `" . $config['dbprefix'] . "commons_photos_features` WHERE `online` = 1 OR `online` = 3";
 	$res = $db->query($sql);
 	if($config['log'] > 2)
@@ -237,7 +237,6 @@ function commons_get_feature_cat($db, $api_url)
 		// set online for feature
 		$sql = "SELECT `online` FROM `" . $config['dbprefix'] . "commons_photos_features` WHERE `feature` LIKE '".$feature."'";
 		$res = $db->query($sql);
-	
 		if($config['log'] > 2)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -290,7 +289,6 @@ function commons_get_feature_cat_db($db)
 	
 	$sql = "SELECT `feature` FROM `" . $config['dbprefix'] . "commons_photos_features` WHERE `online` >= 1";
 	$res = $db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -328,7 +326,6 @@ function commons_feature_exists($db, $features, $commons_gemeinde)
 		
 		$sql = "UPDATE `" . $config['dbprefix'] . "commons_commonscat` SET `$feature_name`='0' WHERE `commons_gemeinde`='$commons_gemeinde' AND `$feature_name` = 1";
 		$db->query($sql);
-
 		if($config['log'] > 2)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -413,6 +410,10 @@ function commons_get_fotos($db, $url, $api_url, $category, $main_category, $feat
 	
 	if($str === FALSE)
 	{
+		if($config['log'] > 0)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t connection error \t commons_get_fotos: \t ".$url);
+		}
 		return "connection error";
 	}
 	else
@@ -606,7 +607,6 @@ function commons_get_fotos($db, $url, $api_url, $category, $main_category, $feat
 					}
 					else if($num_names == 1)
 					{
-					
 						$sql = "UPDATE `" . $config['dbprefix'] . "commons_photos` SET `online` = 2, `data_update` = CURRENT_TIMESTAMP, `level` = $max WHERE `name` LIKE '$title' AND `commons_gemeinde` LIKE '$main_category' AND `commons_feature` LIKE '$category'";
 						$res = $db->query($sql);
 						if($config['log'] > 2)
@@ -704,7 +704,6 @@ function commons_get_main(&$db, $api_url)
 		// clean up
 		$sql = "DELETE FROM `" . $config['dbprefix'] . "commons_photos` WHERE `commons_gemeinde` LIKE '$category' AND `online`!='2' ";
 		$db->query($sql);
-
 		if($config['log'] > 2)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -715,7 +714,6 @@ function commons_get_main(&$db, $api_url)
 		
 		$sql = "UPDATE `" . $config['dbprefix'] . "commons_commonscat` SET `online`='1' WHERE `commons_gemeinde`='$category'";
 		$db->query($sql);
-
 		if($config['log'] > 2)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
