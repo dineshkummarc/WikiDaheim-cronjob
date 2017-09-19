@@ -12,7 +12,6 @@ function list_get_articles_list($db, $source)
 	
 	$sql = "SELECT `article` FROM `" . $config['dbprefix'] . $source . "_list` WHERE `online` >= 1";
 	$res = $db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -47,7 +46,6 @@ function list_get_feature_alias_list($db, $source, $features)
 		
 		$sql = "SELECT `alias` FROM `" . $config['dbprefix'] . $source . "_list_features_alias` WHERE `feature` LIKE '".$feature."'";
 		$res = $db->query($sql);
-	
 		if($config['log'] > 2)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -76,7 +74,6 @@ function list_get_feature_list($db, $source)
 	
 	$sql = "SELECT `feature` FROM `" . $config['dbprefix'] . $source . "_list_features` WHERE `online` >= 1";
 	$res = $db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -105,7 +102,6 @@ function list_get_id($db, $source)
 	
 	$sql = "SELECT `data` FROM `" . $config['dbprefix'] . $source . "_config` WHERE `key` LIKE 'main' AND `type` LIKE 'id'";
 	$res = $db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -133,7 +129,6 @@ function list_get_image_requested($db, $source)
 	
 	$sql = "SELECT `data` FROM `" . $config['dbprefix'] . $source . "_config` WHERE `key` LIKE 'body' AND `type` LIKE 'image_requested'";
 	$res = $db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -152,6 +147,11 @@ function list_get_image_requested($db, $source)
 
 function wiki_remove_link_and_html($data)
 {
+	if($config['log'] > 1)
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t wiki_remove_link_and_html()");
+	}
+	
 	preg_match_all('/\[\[(.*?)\]\]/',$data,$erg);
 
 	$loop_count = count($erg[0]);
@@ -176,7 +176,12 @@ function wiki_remove_link_and_html($data)
 }
 
 function wiki_to_dbhtml($data)
-{	
+{
+	if($config['log'] > 1)
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t wiki_to_dbhtml()");
+	}
+	
 	// links
 	preg_match_all('/\[\[(.*?)\]\]/',$data,$erg);
 	
@@ -234,6 +239,11 @@ function wiki_to_dbhtml($data)
 
 function str_to_data($data)
 {
+	if($config['log'] > 1)
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t str_to_data()");
+	}
+	
 	// comment
 	$data = preg_replace("/&lt;(.*)&gt;/Uis","",$data);
 	
@@ -268,7 +278,6 @@ function str_to_data($data)
 		}
 		else
 		{
-			echo "*" . $matche . "->" . $replace . "\n";
 			$data = str_replace($matche, $replace, $data);
 		}
 	}
@@ -332,7 +341,6 @@ function list_get_article($db, $source, $url, $article, $features)
 		// foot
 		$sql = "SELECT `data` FROM `" . $config['dbprefix'] . $source . "_config` WHERE `key` LIKE 'foot' AND `type` LIKE 'main'";
 		$res = $db->query($sql);
-		
 		if($config['log'] > 2)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -385,7 +393,6 @@ function list_get_article($db, $source, $url, $article, $features)
 		
 		$sql = "SELECT `data` FROM `" . $config['dbprefix'] . $source . "_config` WHERE `key` LIKE 'head' AND `type` LIKE 'feature'";
 		$res = $db->query($sql);
-		
 		if($config['log'] > 2)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -476,7 +483,6 @@ function list_get_article($db, $source, $url, $article, $features)
 		// body
 		$sql = "SELECT `data` FROM `" . $config['dbprefix'] . $source . "_config` WHERE `key` LIKE 'body' AND `type` LIKE 'main'";
 		$res = $db->query($sql);
-		
 		if($config['log'] > 2)
 		{
 			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -659,7 +665,6 @@ function list_get_article($db, $source, $url, $article, $features)
 				{
 					$sql = "DELETE FROM `" . $config['dbprefix'] . $source . "_list_data` WHERE `" . $key[0] . "` LIKE '" . $id[$key[0]]. "'";
 					$db->query($sql);
-					
 					if($config['log'] > 2)
 					{
 						append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -691,7 +696,6 @@ function list_get_article($db, $source, $url, $article, $features)
 				$sql .= "'".$article."', '2', CURRENT_TIMESTAMP)";
 				
 				$db->query($sql);
-	
 				if($config['log'] > 2)
 				{
 					append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -704,7 +708,6 @@ function list_get_article($db, $source, $url, $article, $features)
 					{
 						$sql_gemeinde = str_replace("'".$db->real_escape_string( trim($gemeinde[0]) )."'","'".$db->real_escape_string( trim($gemeinde[$gi]) )."'",$sql);
 						$db->query($sql_gemeinde);
-						
 						if($config['log'] > 2)
 						{
 							append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql_gemeinde);
@@ -719,7 +722,6 @@ function list_get_article($db, $source, $url, $article, $features)
 					{
 						$sql = "DELETE FROM `" . $config['dbprefix'] . $source . "_image_requested` WHERE `id` LIKE '" . $id[$key[0]]. "'";
 						$db->query($sql);
-				
 						if($config['log'] > 2)
 						{
 							append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -742,12 +744,11 @@ function list_get_article($db, $source, $url, $article, $features)
 					$sql .= "'".$db->real_escape_string( trim($gemeinde[0]) )."', '2', CURRENT_TIMESTAMP)";
 			
 					$db->query($sql);
-
 					if($config['log'] > 2)
 					{
 						append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 					}
-				
+					
 					// multiple gemeinde
 					if(count($gemeinde) > 1)
 					{
@@ -755,7 +756,6 @@ function list_get_article($db, $source, $url, $article, $features)
 						{
 							$sql_gemeinde = str_replace("'".$db->real_escape_string( trim($gemeinde[0]) )."'","'".$db->real_escape_string( trim($gemeinde[$gi]) )."'",$sql);
 							$db->query($sql_gemeinde);
-						
 							if($config['log'] > 2)
 							{
 								append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql_gemeinde);
@@ -792,7 +792,6 @@ function list_get_main($db, $source)
 	}
 	
 	$db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -809,7 +808,6 @@ function list_get_main($db, $source)
 	}
 	
 	$db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -821,7 +819,6 @@ function list_get_main($db, $source)
 	
 	$sql = "SELECT `data` FROM `" . $config['dbprefix'] . "source_config` WHERE `key` LIKE 'api_url' AND `wiki` LIKE '" . $source . "'";
 	$res = $db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -850,7 +847,6 @@ function list_get_main($db, $source)
 	// set online to 0
 	$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list_data` SET `online`='0' WHERE `online`='1'";
 	$db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -858,7 +854,6 @@ function list_get_main($db, $source)
 	
 	$sql = "UPDATE `" . $config['dbprefix'] . $source . "_image_requested` SET `online`='0' WHERE `online`='1'";
 	$db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -866,7 +861,6 @@ function list_get_main($db, $source)
 	
 	$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list` SET `online`='2' WHERE `online`='3'";
 	$db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
@@ -874,7 +868,6 @@ function list_get_main($db, $source)
 
 	$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list_features` SET `online`='1' WHERE `online`='3' OR `online`='2'";
 	$db->query($sql);
-	
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
