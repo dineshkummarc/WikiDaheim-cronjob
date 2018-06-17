@@ -53,7 +53,6 @@ function list_get_feature_alias_list($db, $source, $features)
 		
 		while($row = $res->fetch_array(MYSQLI_ASSOC))
 		{
-			
 			$feature_alias[$feature][strtolower(str_replace(" ","", $db->real_escape_string($row['alias'])))] = "";
 		}
 	
@@ -147,6 +146,8 @@ function list_get_image_requested($db, $source)
 
 function wiki_remove_link_and_html($data)
 {
+	global $config;
+	
 	if($config['log'] > 1)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t wiki_remove_link_and_html()");
@@ -170,13 +171,19 @@ function wiki_remove_link_and_html($data)
 		$loop++;
 	}
 	
-	$data = html_entity_decode($data);
+	$data = html_entity_decode(html_entity_decode($data));
+	
+	// quotes
+	$data = str_replace("&#132;","\"",$data);
+	$data = str_replace("&#147;","\"",$data);
 	
 	return $data;
 }
 
 function wiki_to_dbhtml($data)
 {
+	global $config;
+	
 	if($config['log'] > 1)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t wiki_to_dbhtml()");
@@ -239,6 +246,8 @@ function wiki_to_dbhtml($data)
 
 function str_to_data($data)
 {
+	global $config;
+	
 	if($config['log'] > 1)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t str_to_data()");
@@ -542,7 +551,7 @@ function list_get_article($db, $source, $url, $article, $features)
 								{
 									if(($features_key=='name')|| ($features_key=='adresse'))
 									{
-										$edata[1] = wiki_remove_link_and_html($edata[1]);
+										$edata[1] = $db->real_escape_string( wiki_remove_link_and_html($edata[1]) );
 									}
 								
 									if($features_key=='gemeinde')
@@ -838,7 +847,7 @@ function list_get_main($db, $source)
 		{
 			if($config['log'] > 0)
 			{
-				append_file("log/cron.txt","\n".date(DATE_RFC822)."\t error \t connection error \t wiki_get_main()");
+				append_file("log/cron.txt","\n".date(DATE_RFC822)."\t error \t connection error \t wiki_get_main(".$url.")");
 			}
 			return "ERROR";
 		}
