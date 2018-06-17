@@ -268,7 +268,7 @@ function list_base_get_main($db, $source)
 	{
 		// api query
 		
-		$url = $api_url . '?action=query&list=embeddedin&format=xml&einamespace=0&eititle=' . urlencode($article) ."&continue";
+		$url = $api_url . '?action=query&list=embeddedin&format=xml&einamespace=0|4&eititle=' . urlencode($article) ."&continue";
 		
 		// read data and save to db
 		$continue = list_get_articles($db, $source, $url, $article);
