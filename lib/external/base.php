@@ -52,7 +52,7 @@ function request_get_article(&$db, $source, $url, $gemeinde, $features)
 	}
 	
 	// read data
-	$user_agent = "WikiDaheim/0.0.0 (wikidaheim.at)";
+	$user_agent = $config['user_agent'];
 	ini_set('user_agent', $user_agent);
 	
 	$content = @file_get_contents($url);

@@ -95,7 +95,7 @@ function commons_get_feature_alias_cat(&$db, $url, $base_category, $api_url, $fe
 	}
 	
 	// read data
-	$user_agent = "WikiDaheim/0.0.0 (wikidaheim.at)";
+	$user_agent = $config['user_agent'];
 	ini_set('user_agent', $user_agent);
 	$str = @file_get_contents($url);
 	if($config['log'] > 2)
@@ -468,7 +468,7 @@ function commons_get_fotos(&$db, $url, $api_url, $category, $main_category, $fea
 	}
 	
 	// read data
-	$user_agent = "WikiDaheim/0.0.0 (wikidaheim.at)";
+	$user_agent = $config['user_agent'];
 	ini_set('user_agent', $user_agent);
 	$str = @file_get_contents($url);
 	
