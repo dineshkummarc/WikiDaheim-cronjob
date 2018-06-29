@@ -1,6 +1,6 @@
 <?php
 
-function commons_get_categorys_list($db)
+function commons_get_categorys_list(&$db)
 {
 	global $config;
 	
@@ -23,13 +23,70 @@ function commons_get_categorys_list($db)
 		$categorys[] = $row['commons_gemeinde'];
 	}
 	
-	$res->close();
+	$res->free();
 	
 	return $categorys;
 }
 
-function commons_get_feature_alias_cat($db, $url, $base_category, $api_url, $feature)
+
+// !!! EXCLUDE TODO !!!
+/*
+Brut im Künstlerhaus
+Busts of
+Collections in
+Collections of
+Crown jewels of Austria‎
+Events at
+Events in
+Gardens in
+gardens of
+Gedenktafel f
+Habsburg-Lorraine Household Treasure‎
+Imperial Regalia of the Holy Roman Empire‎
+Insignia of the Kingdom of Bohemia‎
+Interior of
+Paintings formerly in
+Palace of
+Popfest Wien
+Sculptures in
+Ski resorts in Austria
+Tools in
+
+*/
+function exclude_subcat($title)
 {
+	if (strpos($title, 'Brut im Künstlerhaus') !== false) {return true;}
+	else if (strpos($title, 'Brut im Künstlerhaus') !== false) {return true;}
+	else if (strpos($title, 'Busts of') !== false) {return true;}
+	else if (strpos($title, 'Collections in') !== false) {return true;}
+	else if (strpos($title, 'Collections of') !== false) {return true;}
+	else if (strpos($title, 'Crown jewels of Austria‎') !== false) {return true;}
+	else if (strpos($title, 'Events at') !== false) {return true;}
+	else if (strpos($title, 'Events in') !== false) {return true;}
+	else if (strpos($title, 'Gardens in') !== false) {return true;}
+	else if (strpos($title, 'gardens of') !== false) {return true;}
+	else if (strpos($title, 'Gedenktafel f') !== false) {return true;}
+	else if (strpos($title, 'Habsburg-Lorraine Household Treasure‎') !== false) {return true;}
+	else if (strpos($title, 'Imperial Regalia of the Holy Roman Empire‎') !== false) {return true;}
+	else if (strpos($title, 'Insignia of the Kingdom of Bohemia‎') !== false) {return true;}
+	else if (strpos($title, 'Interior of') !== false) {return true;}
+	else if (strpos($title, 'Paintings formerly in') !== false) {return true;}
+	else if (strpos($title, 'Palace of') !== false) {return true;}
+	else if (strpos($title, 'Popfest Wien') !== false) {return true;}
+	else if (strpos($title, 'Sculptures in') !== false) {return true;}
+	else if (strpos($title, 'Ski resorts in Austria') !== false) {return true;}
+	else if (strpos($title, 'Tools in') !== false) {return true;}
+	
+	else if (strpos($title, 'Google Art Project') !== false) {return true;}
+	else if (strpos($title, 'Painting by') !== false) {return true;}
+	else if (strpos($title, 'Portrait of') !== false) {return true;}
+	
+	return false;
+}
+
+function commons_get_feature_alias_cat(&$db, $url, $base_category, $api_url, $feature, $max = 4)
+{
+	$max--;
 	global $config;
 
 	if($config['log'] > 1)
@@ -82,48 +139,60 @@ function commons_get_feature_alias_cat($db, $url, $base_category, $api_url, $fea
 			
 			if($type == "subcat")
 			{
-				$online = 0;
 				$title = $db->real_escape_string($title);
-				$sql = "SELECT `online` FROM `" . $config['dbprefix'] . "commons_feature` WHERE `feature` LIKE '$feature' AND `commons_string` LIKE '$title'";
-				$res = $db->query($sql);
-				if($config['log'] > 2)
+				if($max <= 0)
 				{
-					append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+					// skip
 				}
-				
-				$sql = "INSERT INTO `" . $config['dbprefix'] . "commons_feature` (`feature`, `commons_string`, `data_update`, `online`) VALUES ('$feature','$title',CURRENT_TIMESTAMP,2) ";
-				while($row = $res->fetch_array(MYSQLI_ASSOC))
+				else if(exclude_subcat($title))
 				{
-					$sql = "UPDATE `" . $config['dbprefix'] . "commons_feature` SET `data_update`=CURRENT_TIMESTAMP, `online`=2 WHERE `feature` LIKE '$feature' AND `commons_string` LIKE '$title' ";
-					$online = $row['online'];
+					// skip
 				}
-				$res->close();
-				
-				if($online != 2)
+				else
 				{
-					$db->query($sql);
+					$online = 0;
+					
+					$sql = "SELECT `online` FROM `" . $config['dbprefix'] . "commons_feature` WHERE `feature` LIKE '$feature' AND `commons_string` LIKE '$title'";
+					$res = $db->query($sql);
 					if($config['log'] > 2)
 					{
 						append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 					}
-					
-					$url = $api_url . '?action=query&list=categorymembers&format=xml&cmtitle=' . urlencode($title) . '&cmlimit=max&cmprop=title|type&continue';
-					
-					$continue = commons_get_feature_alias_cat($db, $url, $base_category, $api_url, $feature);
-		
-					while($continue != "") // loop while api gives data
+				
+					$sql = "INSERT INTO `" . $config['dbprefix'] . "commons_feature` (`feature`, `commons_string`, `data_update`, `online`) VALUES ('$feature','$title',CURRENT_TIMESTAMP,2) ";
+					while($row = $res->fetch_array(MYSQLI_ASSOC))
 					{
-						if($continue == "connection error")
+						$sql = "UPDATE `" . $config['dbprefix'] . "commons_feature` SET `data_update`=CURRENT_TIMESTAMP, `online`=2 WHERE `feature` LIKE '$feature' AND `commons_string` LIKE '$title' ";
+						$online = $row['online'];
+					}
+					$res->free();
+				
+					if($online != 2)
+					{
+						$db->query($sql);
+						if($config['log'] > 2)
 						{
-							// log error
-							if($config['log'] > 0)
-							{
-								append_file("log/cron.txt","\n".date(DATE_RFC822)."\t error \t connection error \t commons_get_cat()");
-							}
-							return "ERROR";
+							append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 						}
-						$continue = commons_get_feature_alias_cat($db, $url."=-||&cmcontinue=".$continue, $base_category, $api_url, $feature);
-					} // end api loop
+					
+						$url = $api_url . '?action=query&list=categorymembers&format=xml&cmtitle=' . urlencode($title) . '&cmlimit=max&cmprop=title|type&continue';
+					
+						$continue = commons_get_feature_alias_cat($db, $url, $base_category, $api_url, $feature, $max);
+		
+						while($continue != "") // loop while api gives data
+						{
+							if($continue == "connection error")
+							{
+								// log error
+								if($config['log'] > 0)
+								{
+									append_file("log/cron.txt","\n".date(DATE_RFC822)."\t error \t connection error \t commons_get_cat()");
+								}
+								return "ERROR";
+							}
+							$continue = commons_get_feature_alias_cat($db, $url."=-||&cmcontinue=".$continue, $base_category, $api_url, $feature, $max);
+						} // end api loop
+					}
 				}
 			}
 			else if ($type == "file")
@@ -143,7 +212,7 @@ function commons_get_feature_alias_cat($db, $url, $base_category, $api_url, $fea
 					$sql = "UPDATE `" . $config['dbprefix'] . "commons_feature_photos` SET `data_update`=CURRENT_TIMESTAMP, `online`=2 WHERE `feature` LIKE '$feature' AND `photo` LIKE '$title' ";
 					$file_online = $row['online'];
 				}
-				$res->close();
+				$res->free();
 				
 				if($file_online != 2)
 				{
@@ -160,7 +229,7 @@ function commons_get_feature_alias_cat($db, $url, $base_category, $api_url, $fea
 	return $continue;
 }
 
-function commons_get_feature_cat($db, $api_url)
+function commons_get_feature_cat(&$db, $api_url)
 {
 	global $config;
 	
@@ -182,7 +251,7 @@ function commons_get_feature_cat($db, $api_url)
 	{ 
 		$features[] = $row['feature'];
 	}
-	$res->close();
+	$res->free();
 	
 	foreach($features as $feature)
 	{
@@ -232,7 +301,7 @@ function commons_get_feature_cat($db, $api_url)
 			} // api loop
 		}
 	
-		$res->close();
+		$res->free();
 		
 		// set online for feature
 		$sql = "SELECT `online` FROM `" . $config['dbprefix'] . "commons_photos_features` WHERE `feature` LIKE '".$feature."'";
@@ -276,7 +345,7 @@ function commons_get_feature_cat($db, $api_url)
 	}
 }
 
-function commons_get_feature_cat_db($db)
+function commons_get_feature_cat_db(&$db)
 {
 	global $config;
 	
@@ -299,12 +368,12 @@ function commons_get_feature_cat_db($db)
 		$feature_alias[] = $row['feature'];
 	}
 	
-	$res->close();
+	$res->free();
 	
 	return $feature_alias;
 }
 
-function commons_feature_exists($db, $features, $commons_gemeinde)
+function commons_feature_exists(&$db, $features, $commons_gemeinde)
 {
 	global $config;
 	
@@ -364,7 +433,7 @@ function commons_feature_exists($db, $features, $commons_gemeinde)
 					append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 				}
 			}
-			$res->close();
+			$res->free();
 		
 			if($features_exists != 0)
 			{
@@ -374,7 +443,7 @@ function commons_feature_exists($db, $features, $commons_gemeinde)
 	}
 }
 
-function commons_get_fotos($db, $url, $api_url, $category, $main_category, $features, $max = 4, $max_fotos = 6)
+function commons_get_fotos(&$db, $url, $api_url, $category, $main_category, $features, $max = 4, $max_fotos = 6)
 {
 	$max--;
 	global $config;
@@ -494,13 +563,13 @@ function commons_get_fotos($db, $url, $api_url, $category, $main_category, $feat
 					$num_names = $res->num_rows;
 					if ($num_names < 1)
 					{
-						$res->close();
+						$res->free();
 					}
 					else
 					{
 						$row = $res->fetch_array(MYSQLI_ASSOC);
 						$feature = $row['feature'];
-						$res->close();
+						$res->free();
 						
 						$sql = "SELECT `online` FROM `" . $config['dbprefix'] . "commons_photos` WHERE `name` LIKE '$title' AND `commons_gemeinde` LIKE '$main_category' AND `commons_feature` LIKE '$feature'";
 						$res = $db->query($sql);
@@ -510,7 +579,7 @@ function commons_get_fotos($db, $url, $api_url, $category, $main_category, $feat
 						}
 				
 						$num_names = $res->num_rows;
-						$res->close();
+						$res->free();
 						
 						if ($num_names < 1)
 						{
@@ -564,7 +633,7 @@ function commons_get_fotos($db, $url, $api_url, $category, $main_category, $feat
 					
 						$row = $res->fetch_array(MYSQLI_ASSOC);
 						$status = $row[$feature];
-						$res->close();
+						$res->free();
 						
 						if($status == 0)
 						{
@@ -594,7 +663,7 @@ function commons_get_fotos($db, $url, $api_url, $category, $main_category, $feat
 					}
 				
 					$num_names = $res->num_rows;
-					$res->close();
+					$res->free();
 				
 					if ($num_names < 1)
 					{

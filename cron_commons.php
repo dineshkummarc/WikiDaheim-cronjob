@@ -28,7 +28,7 @@ else
 	
 	$row = $res->fetch_array(MYSQLI_ASSOC);
 	$api_url = $row['data'];
-	$res->close();
+	$res->free();
 	
 	
 	// stop if active
@@ -44,7 +44,7 @@ else
 	{
 		$lastedit = (int) $row['lastedit'];
 	}
-	$res->close();
+	$res->free();
 	$now = (int) time() - 60;
 	
 	if($lastedit == 0)
@@ -69,7 +69,7 @@ else
 	{
 		$lastedit = (int) $row['lastedit'];
 	}
-	$res->close();
+	$res->free();
 	$now = (int) time() - 60;
 	if($lastedit >= $now)
 	{

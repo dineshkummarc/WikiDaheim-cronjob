@@ -1,7 +1,7 @@
 <?php
 
 // get categories from db
-function list_get_articles_list($db, $source)
+function list_get_articles_list(&$db, $source)
 {
 	global $config;
 	
@@ -24,12 +24,12 @@ function list_get_articles_list($db, $source)
 		$articles[] = $db->real_escape_string($row['article']);
 	}
 	
-	$res->close();
+	$res->free();
 	
 	return $articles;
 }
 
-function list_get_feature_alias_list($db, $source, $features)
+function list_get_feature_alias_list(&$db, $source, $features)
 {
 	global $config;
 	
@@ -56,13 +56,13 @@ function list_get_feature_alias_list($db, $source, $features)
 			$feature_alias[$feature][strtolower(str_replace(" ","", $db->real_escape_string($row['alias'])))] = "";
 		}
 	
-		$res->close();
+		$res->free();
 	}
 	
 	return $feature_alias;
 }
 
-function list_get_feature_list($db, $source)
+function list_get_feature_list(&$db, $source)
 {
 	global $config;
 	
@@ -85,12 +85,12 @@ function list_get_feature_list($db, $source)
 		$features[] = strtolower(str_replace(" ","", $db->real_escape_string($row['feature'])));
 	}
 	
-	$res->close();
+	$res->free();
 	
 	return list_get_feature_alias_list($db, $source, $features);
 }
 
-function list_get_id($db, $source)
+function list_get_id(&$db, $source)
 {
 	global $config;
 
@@ -112,12 +112,12 @@ function list_get_id($db, $source)
 	{
 		$id[$db->real_escape_string($row['data'])] = "";
 	}
-	$res->close();
+	$res->free();
 	
 	return $id;
 }
 
-function list_get_image_requested($db, $source)
+function list_get_image_requested(&$db, $source)
 {
 	global $config;
 
@@ -139,7 +139,7 @@ function list_get_image_requested($db, $source)
 	{
 		$image_requested[$db->real_escape_string($row['data'])] = "";
 	}
-	$res->close();
+	$res->free();
 	
 	return $image_requested;
 }
@@ -320,7 +320,7 @@ function str_to_data($data)
 	return $data;
 }
 
-function list_get_article($db, $source, $url, $article, $features)
+function list_get_article(&$db, $source, $url, $article, $features)
 {
 	global $config;
 
@@ -357,7 +357,7 @@ function list_get_article($db, $source, $url, $article, $features)
 		
 		$row = $res->fetch_array(MYSQLI_ASSOC);
 		$split = $row['data'];
-		$res->close();
+		$res->free();
 		
 		
 		$str = str_ireplace($split,$split,$str);
@@ -377,7 +377,7 @@ function list_get_article($db, $source, $url, $article, $features)
 		
 		$row = $res->fetch_array(MYSQLI_ASSOC);
 		$split = $row['data'];
-		$res->close();
+		$res->free();
 		
 		$str = str_ireplace($split,$split,$str);
 		$data_array = explode($split, $str);
@@ -414,7 +414,7 @@ function list_get_article($db, $source, $url, $article, $features)
 			$head_feature[strtolower(str_replace(" ","", $db->real_escape_string($row['data'])))] = "";
 		}
 	
-		$res->close();
+		$res->free();
 		
 		
 		$has_gemeinde = 0;
@@ -499,7 +499,7 @@ function list_get_article($db, $source, $url, $article, $features)
 		
 		$row = $res->fetch_array(MYSQLI_ASSOC);
 		$split = $row['data'];
-		$res->close();
+		$res->free();
 		
 		$str = str_ireplace($split,$split,$str);
 		
@@ -777,7 +777,7 @@ function list_get_article($db, $source, $url, $article, $features)
 	} // get data
 }
 
-function list_get_main($db, $source)
+function list_get_main(&$db, $source)
 {
 	global $config;
 	
@@ -835,7 +835,7 @@ function list_get_main($db, $source)
 	
 	$row = $res->fetch_array(MYSQLI_ASSOC);
 	$api_url = $row['data'];
-	$res->close();
+	$res->free();
 	
 	foreach($articles as $article)
 	{

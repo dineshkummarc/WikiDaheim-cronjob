@@ -1,6 +1,6 @@
 <?php
 
-function township_get_articles_list($db, $source)
+function township_get_articles_list(&$db, $source)
 {
 	global $config;
 	
@@ -24,12 +24,12 @@ function township_get_articles_list($db, $source)
 		$articles[] = $db->real_escape_string($row['article']);
 	}
 	
-	$res->close();
+	$res->free();
 	
 	return $articles;
 }
 
-function township_get_feature_alias_list($db, $source, $features)
+function township_get_feature_alias_list(&$db, $source, $features)
 {
 	global $config;
 	
@@ -57,13 +57,13 @@ function township_get_feature_alias_list($db, $source, $features)
 			$feature_alias[$feature][$db->real_escape_string($row['alias'])] = "";
 		}
 	
-		$res->close();
+		$res->free();
 	}
 	
 	return $feature_alias;
 }
 
-function township_get_feature_list($db, $source)
+function township_get_feature_list(&$db, $source)
 {
 	global $config;
 	
@@ -87,7 +87,7 @@ function township_get_feature_list($db, $source)
 		$features[] = $db->real_escape_string($row['feature']);
 	}
 	
-	$res->close();
+	$res->free();
 	
 	return township_get_feature_alias_list($db, $source, $features);
 }
@@ -131,7 +131,7 @@ function township_has_feature($str, $feature)
 	return 0;
 }
 
-function township_get_municipalityid($db, $str, $article)
+function township_get_municipalityid(&$db, $str, $article)
 {
 	global $config;
 	
@@ -171,7 +171,7 @@ function township_get_municipalityid($db, $str, $article)
 	}
 }
 
-function township_get_commonscat($db, $str, $article)
+function township_get_commonscat(&$db, $str, $article)
 {
 	global $config;
 	
@@ -297,7 +297,7 @@ function township_get_commonscat($db, $str, $article)
 		$num_names = $res->num_rows;
 		if ($num_names < 1) // new
 		{
-			$res->close();
+			$res->free();
 			
 			$sql = "INSERT INTO " . $config['dbprefix'] . "commons_commonscat(commons_gemeinde, online, data_update) VALUES ('$commonscat', 3, CURRENT_TIMESTAMP)";
 			$db->query($sql);
@@ -320,7 +320,7 @@ function township_get_commonscat($db, $str, $article)
 			{
 				$online = 1;
 			}
-			$res->close();
+			$res->free();
 			
 			$sql = "UPDATE `" . $config['dbprefix'] . "commons_commonscat` SET online='$online', data_update=CURRENT_TIMESTAMP WHERE `commons_gemeinde` LIKE '$commonscat'";
 			$db->query($sql);
@@ -332,7 +332,7 @@ function township_get_commonscat($db, $str, $article)
 		} // in db
 		else // fix duplicates
 		{
-			$res->close();
+			$res->free();
 			
 			$sql = "DELETE FROM `" . $config['dbprefix'] . "commons_commonscat` WHERE `commons_gemeinde` LIKE '$commonscat'";
 			
@@ -356,7 +356,7 @@ function township_get_commonscat($db, $str, $article)
 	return $commonscat;
 }
 
-function township_get_wikidata($db, $source, $url, $article)
+function township_get_wikidata(&$db, $source, $url, $article)
 {
 	global $config;
 
@@ -397,7 +397,7 @@ function township_get_wikidata($db, $source, $url, $article)
 	}
 }
 
-function township_get_article($db, $source, $url, $article, $features)
+function township_get_article(&$db, $source, $url, $article, $features)
 {
 	global $config;
 
@@ -438,7 +438,7 @@ function township_get_article($db, $source, $url, $article, $features)
 		$num_names = $res->num_rows;
 		if ($num_names < 1) // new
 		{
-			$res->close();
+			$res->free();
 			
 			$sql = "INSERT INTO " . $config['dbprefix'] . $source . "_township_data(article, online, commonscat) VALUES ('$article', 3, '$commonscat')"; 
 			$db->query($sql);
@@ -457,7 +457,7 @@ function township_get_article($db, $source, $url, $article, $features)
 			{
 				$online = 3;
 			}
-			$res->close();
+			$res->free();
 						
 			$sql = "UPDATE `" . $config['dbprefix'] . $source . "_township_data` SET online='$online', commonscat = '$commonscat' WHERE `article` LIKE '$article'";
 			$db->query($sql);
@@ -469,7 +469,7 @@ function township_get_article($db, $source, $url, $article, $features)
 		} // end in db
 		else // duplicate
 		{
-			$res->close();
+			$res->free();
 			
 			if($config['log'] > 0)
 			{
@@ -511,7 +511,7 @@ function township_get_article($db, $source, $url, $article, $features)
 }
 
 
-function township_get_main($db, $source)
+function township_get_main(&$db, $source)
 {
 	global $config;
 	
@@ -543,7 +543,7 @@ function township_get_main($db, $source)
 	
 	$row = $res->fetch_array(MYSQLI_ASSOC);
 	$api_url = $row['data'];
-	$res->close();
+	$res->free();
 	
 	foreach($articles as $article)
 	{

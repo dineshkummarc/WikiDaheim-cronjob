@@ -7,7 +7,7 @@ require_once "lib/wiki/wiki.php"; // get wiki data
 require_once "lib/main/list.php"; // get main category
 require_once "lib/wiki/list.php"; // get lists data
 
-function get_source($db,$recursion=true)
+function get_source(&$db,$recursion=true)
 {
 	global $config;
 	$sources = array();
@@ -25,7 +25,7 @@ function get_source($db,$recursion=true)
 		$sources[$i]['type'] = $row['type'];
 		break;
 	}
-	$res->close();
+	$res->free();
 	
 	if (($i == 0) && $recursion)
 	{
@@ -107,6 +107,16 @@ else
 				break;
 				
 			case "external":
+				$sql = "UPDATE `" . $config['dbprefix'] . "config` SET `online`='1' WHERE `data`='" . $source['data'] . "' AND `type`='" . $source['type'] . "'";
+				$db->query($sql);
+	
+				if($config['log'] > 2)
+				{
+					append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+				}
+				break;
+			
+			case "request":
 				$sql = "UPDATE `" . $config['dbprefix'] . "config` SET `online`='1' WHERE `data`='" . $source['data'] . "' AND `type`='" . $source['type'] . "'";
 				$db->query($sql);
 	

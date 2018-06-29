@@ -1,7 +1,7 @@
 <?php
 
 // get categories from db
-function township_get_main_list($db, $source)
+function township_get_main_list(&$db, $source)
 {
 	global $config;
 	
@@ -25,13 +25,13 @@ function township_get_main_list($db, $source)
 		$categorys[] = $db->real_escape_string($row['category']);
 	}
 	
-	$res->close();
+	$res->free();
 	
 	return $categorys;
 }
 
 // get data from wiki and save in db
-function township_get_townships($db, $source, $url, $townships)
+function township_get_townships(&$db, $source, $url, $townships)
 {
 	global $config;
 
@@ -92,7 +92,7 @@ function township_get_townships($db, $source, $url, $townships)
 					$num_names = $res->num_rows;
 					if ($num_names < 1) // new
 					{
-						$res->close();
+						$res->free();
 						
 						$sql = "INSERT INTO " . $config['dbprefix'] . $source . "_township(article, online, data_update) VALUES ('$value', 3, CURRENT_TIMESTAMP)"; 
 						$db->query($sql);
@@ -112,7 +112,7 @@ function township_get_townships($db, $source, $url, $townships)
 							$online = 3;
 						}
 						
-						$res->close();
+						$res->free();
 						
 						$sql = "UPDATE `" . $config['dbprefix'] . $source . "_township` SET online='$online', data_update=CURRENT_TIMESTAMP WHERE `article` LIKE '$value'";
 						$db->query($sql);
@@ -124,7 +124,7 @@ function township_get_townships($db, $source, $url, $townships)
 					} // end in db
 					else // duplicate
 					{
-						$res->close();
+						$res->free();
 						
 						if($config['log'] > 0)
 						{
@@ -158,7 +158,7 @@ function township_get_townships($db, $source, $url, $townships)
 }
 
 // exclude lists & categotys
-function township_exclude_townships($db, $source)
+function township_exclude_townships(&$db, $source)
 {
 	global $config;
 
@@ -182,7 +182,7 @@ function township_exclude_townships($db, $source)
 		$exclude[] = $db->real_escape_string($row['data']);
 	}
 	
-	$res->close();
+	$res->free();
 	
 	foreach($exclude as $value)
 	{
@@ -197,7 +197,7 @@ function township_exclude_townships($db, $source)
 }
 
 // include lists & categotys
-function township_include_townships($db, $source)
+function township_include_townships(&$db, $source)
 {
 	global $config;
 
@@ -221,7 +221,7 @@ function township_include_townships($db, $source)
 		$include[] = $db->real_escape_string($row['data']);
 	}
 	
-	$res->close();
+	$res->free();
 	
 	foreach($include as $value)
 	{
@@ -236,7 +236,7 @@ function township_include_townships($db, $source)
 }
 
 // get article adresses from wp
-function township_base_get_main($db, $source)
+function township_base_get_main(&$db, $source)
 {
 	global $config;
 	
@@ -257,7 +257,7 @@ function township_base_get_main($db, $source)
 	{
 		$todo = $db->real_escape_string($row['todo']);
 	}
-	$res->close();
+	$res->free();
 	if($todo != 0)
 	{
 		return;
@@ -293,7 +293,7 @@ function township_base_get_main($db, $source)
 	
 	$row = $res->fetch_array(MYSQLI_ASSOC);
 	$api_url = $row['data'];
-	$res->close();
+	$res->free();
 	
 	foreach($main as $townships)
 	{

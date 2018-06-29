@@ -1,6 +1,6 @@
 <?php
 
-function list_get_main_list($db, $source)
+function list_get_main_list(&$db, $source)
 {
 	global $config;
 	
@@ -24,12 +24,12 @@ function list_get_main_list($db, $source)
 		$articles[] = $db->real_escape_string($row['category']);
 	}
 	
-	$res->close();
+	$res->free();
 	
 	return $articles;
 }
 
-function list_get_articles($db, $source, $url, $article)
+function list_get_articles(&$db, $source, $url, $article)
 {
 	global $config;
 
@@ -90,7 +90,7 @@ function list_get_articles($db, $source, $url, $article)
 					$num_names = $res->num_rows;
 					if ($num_names < 1) // new
 					{
-						$res->close();
+						$res->free();
 						
 						$sql = "INSERT INTO " . $config['dbprefix'] . $source . "_list(article, online, data_update) VALUES ('$value', 3, CURRENT_TIMESTAMP)"; 
 						$db->query($sql);
@@ -110,7 +110,7 @@ function list_get_articles($db, $source, $url, $article)
 							$online = 3;
 						}
 						
-						$res->close();
+						$res->free();
 						
 						$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list` SET online='$online', data_update=CURRENT_TIMESTAMP WHERE `article` LIKE '$value'";
 						$db->query($sql);
@@ -122,7 +122,7 @@ function list_get_articles($db, $source, $url, $article)
 					} // end in db
 					else // duplicate
 					{
-						$res->close();
+						$res->free();
 						
 						if($config['log'] > 0)
 						{
@@ -155,7 +155,7 @@ function list_get_articles($db, $source, $url, $article)
 }
 
 // exclude lists & categotys
-function list_exclude_list($db, $source)
+function list_exclude_list(&$db, $source)
 {
 	global $config;
 
@@ -179,7 +179,7 @@ function list_exclude_list($db, $source)
 		$exclude[] = $db->real_escape_string($row['data']);
 	}
 	
-	$res->close();
+	$res->free();
 	
 	foreach($exclude as $value)
 	{
@@ -194,7 +194,7 @@ function list_exclude_list($db, $source)
 }
 
 // include lists & categotys
-function list_include_list($db, $source)
+function list_include_list(&$db, $source)
 {
 	global $config;
 
@@ -218,7 +218,7 @@ function list_include_list($db, $source)
 		$include[] = $db->real_escape_string($row['data']);
 	}
 	
-	$res->close();
+	$res->free();
 	
 	foreach($include as $value)
 	{
@@ -232,7 +232,7 @@ function list_include_list($db, $source)
 	}
 }
 
-function list_base_get_main($db, $source)
+function list_base_get_main(&$db, $source)
 {
 	global $config;
 	
@@ -262,7 +262,7 @@ function list_base_get_main($db, $source)
 	
 	$row = $res->fetch_array(MYSQLI_ASSOC);
 	$api_url = $row['data'];
-	$res->close();
+	$res->free();
 	
 	foreach($articles as $article)
 	{
