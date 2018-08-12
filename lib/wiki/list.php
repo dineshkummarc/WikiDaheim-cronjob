@@ -451,7 +451,7 @@ function list_get_article(&$db, $source, $url, $article, $features)
 						else if(strpos($article, 'Wien/Floridsdorf') !== false){$head_gemeinde = array("Floridsdorf");}
 						else if(strpos($article, 'Wien/Hernals') !== false){$head_gemeinde = array("Hernals");}
 						else if(strpos($article, 'Wien/Hietzing') !== false){$head_gemeinde = array("Hietzing");}
-						else if(strpos($article, 'Wien/Innere Stadt') !== false){$head_gemeinde = array("Innere Stadt");}
+						else if(strpos($article, 'Wien/Innere Stadt') !== false){$head_gemeinde = array("Innere Stadt, Vienna");}
 						else if(strpos($article, 'Wien/Josefstadt') !== false){$head_gemeinde = array("Josefstadt");}
 						else if(strpos($article, 'Wien/Landstraße') !== false){$head_gemeinde = array("Landstraße");}
 						else if(strpos($article, 'Wien/Leopoldstadt') !== false){$head_gemeinde = array("Leopoldstadt");}
@@ -578,7 +578,7 @@ function list_get_article(&$db, $source, $url, $article, $features)
 											else if(strpos($article, 'Wien/Floridsdorf') !== false){$gemeinde = array("Floridsdorf");}
 											else if(strpos($article, 'Wien/Hernals') !== false){$gemeinde = array("Hernals");}
 											else if(strpos($article, 'Wien/Hietzing') !== false){$gemeinde = array("Hietzing");}
-											else if(strpos($article, 'Wien/Innere Stadt') !== false){$gemeinde = array("Innere Stadt");}
+											else if(strpos($article, 'Wien/Innere Stadt') !== false){$gemeinde = array("Innere Stadt, Vienna");}
 											else if(strpos($article, 'Wien/Josefstadt') !== false){$gemeinde = array("Josefstadt");}
 											else if(strpos($article, 'Wien/Landstraße') !== false){$gemeinde = array("Landstraße");}
 											else if(strpos($article, 'Wien/Leopoldstadt') !== false){$gemeinde = array("Leopoldstadt");}
@@ -640,7 +640,7 @@ function list_get_article(&$db, $source, $url, $article, $features)
 					else if(strpos($article, 'Wien/Floridsdorf') !== false){$gemeinde = array("Floridsdorf");}
 					else if(strpos($article, 'Wien/Hernals') !== false){$gemeinde = array("Hernals");}
 					else if(strpos($article, 'Wien/Hietzing') !== false){$gemeinde = array("Hietzing");}
-					else if(strpos($article, 'Wien/Innere Stadt') !== false){$gemeinde = array("Innere Stadt");}
+					else if(strpos($article, 'Wien/Innere Stadt') !== false){$gemeinde = array("Innere Stadt, Vienna");}
 					else if(strpos($article, 'Wien/Josefstadt') !== false){$gemeinde = array("Josefstadt");}
 					else if(strpos($article, 'Wien/Landstraße') !== false){$gemeinde = array("Landstraße");}
 					else if(strpos($article, 'Wien/Leopoldstadt') !== false){$gemeinde = array("Leopoldstadt");}
