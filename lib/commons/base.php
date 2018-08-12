@@ -41,16 +41,20 @@ Events in
 Gardens in
 gardens of
 Gedenktafel f
+Google Art Project
 Habsburg-Lorraine Household Treasure‎
 Imperial Regalia of the Holy Roman Empire‎
 Insignia of the Kingdom of Bohemia‎
 Interior of
+Painting by
 Paintings formerly in
 Palace of
 Popfest Wien
+Portrait of
 Sculptures in
 Ski resorts in Austria
 Tools in
+Views from
 
 */
 function exclude_subcat($title)
@@ -66,20 +70,20 @@ function exclude_subcat($title)
 	else if (strpos($title, 'Gardens in') !== false) {return true;}
 	else if (strpos($title, 'gardens of') !== false) {return true;}
 	else if (strpos($title, 'Gedenktafel f') !== false) {return true;}
+	else if (strpos($title, 'Google Art Project') !== false) {return true;}
 	else if (strpos($title, 'Habsburg-Lorraine Household Treasure‎') !== false) {return true;}
 	else if (strpos($title, 'Imperial Regalia of the Holy Roman Empire‎') !== false) {return true;}
 	else if (strpos($title, 'Insignia of the Kingdom of Bohemia‎') !== false) {return true;}
 	else if (strpos($title, 'Interior of') !== false) {return true;}
+	else if (strpos($title, 'Painting by') !== false) {return true;}
 	else if (strpos($title, 'Paintings formerly in') !== false) {return true;}
 	else if (strpos($title, 'Palace of') !== false) {return true;}
 	else if (strpos($title, 'Popfest Wien') !== false) {return true;}
+	else if (strpos($title, 'Portrait of') !== false) {return true;}
 	else if (strpos($title, 'Sculptures in') !== false) {return true;}
 	else if (strpos($title, 'Ski resorts in Austria') !== false) {return true;}
 	else if (strpos($title, 'Tools in') !== false) {return true;}
-	
-	else if (strpos($title, 'Google Art Project') !== false) {return true;}
-	else if (strpos($title, 'Painting by') !== false) {return true;}
-	else if (strpos($title, 'Portrait of') !== false) {return true;}
+	else if (strpos($title, 'Views from') !== false) {return true;}
 	
 	return false;
 }
