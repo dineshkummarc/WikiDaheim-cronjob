@@ -41,6 +41,53 @@ function get_source(&$db,$recursion=true)
 	return $sources;
 }
 
+function is_active(&$db,$source,$type)
+{
+	global $config;
+	$sql = "SELECT UNIX_TIMESTAMP(`data_update`) AS `lastedit` FROM `" . $config['dbprefix'] . $source ."_" . $type . "` ORDER BY `data_update` DESC LIMIT 0 , 1";
+	$res = $db->query($sql);
+	if($config['log'] > 2)
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+	}
+	
+	$lastedit = 0;
+	while($row = $res->fetch_array(MYSQLI_ASSOC))
+	{
+		$lastedit = (int) $row['lastedit'];
+	}
+	$res->free();
+	$now = (int) time() - 60;
+	
+	if($lastedit >= $now)
+	{
+		return true;
+	}
+	
+	$sql = "SELECT UNIX_TIMESTAMP(`data_update`) AS `lastedit` FROM `" . $config['dbprefix'] . $source ."_" . $type . "_data` ORDER BY `data_update` DESC LIMIT 0 , 1";
+	$res = $db->query($sql);
+	if($config['log'] > 2)
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+	}
+	
+	$lastedit = 0;
+	while($row = $res->fetch_array(MYSQLI_ASSOC))
+	{
+		$lastedit = (int) $row['lastedit'];
+	}
+	$res->free();
+	$now = (int) time() - 60;
+	
+	if($lastedit >= $now)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+
 // mysql
 $db = new mysqli($config['dbhost'], $config['dbuser'], $config['dbpassword'], $config['dbname']);
 
@@ -64,6 +111,13 @@ else
 		{
 			case "township":
 			
+				if(is_active($db,$source['data'],$source['type']))
+				{
+					echo "township still aktive - no Internal Server Error";
+					$db->close();
+					return;
+				}
+				
 				if(township_base_get_main($db, $source['data']) == "ERROR") // lib/main/wiki.php
 				{
 					$db->close();
@@ -85,6 +139,14 @@ else
 				break;
 				
 			case "list":
+			
+				if(is_active($db,$source['data'],$source['type']))
+				{
+					echo "list still aktive - no Internal Server Error";
+					$db->close();
+					return;
+				}
+				
 				if(list_base_get_main($db, $source['data']) == "ERROR") // lib/main/list.php
 				{
 					$db->close();
@@ -138,6 +200,6 @@ else
 	$db->close();
 }
 
-echo "list done - no Internal Server Error";
+echo "done - no Internal Server Error";
 
 ?>

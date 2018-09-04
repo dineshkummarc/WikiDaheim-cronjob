@@ -10,7 +10,7 @@ function list_get_articles_list(&$db, $source)
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t list_get_articles_list()");
 	}
 	
-	$sql = "SELECT `article` FROM `" . $config['dbprefix'] . $source . "_list` WHERE `online` >= 1";
+	$sql = "SELECT `article` FROM `" . $config['dbprefix'] . $source . "_list` WHERE `online` LIKE 1";
 	$res = $db->query($sql);
 	if($config['log'] > 2)
 	{
@@ -786,6 +786,27 @@ function list_get_main(&$db, $source)
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t list_get_main()");
 	}
 	
+	$sql = "SELECT count(`online`) AS `todo` FROM `" . $config['dbprefix'] . $source . "_list` WHERE `online` = 2";
+	$res = $db->query($sql);
+	
+	if($config['log'] > 2)
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+	}
+	
+	$row = $res->fetch_array(MYSQLI_ASSOC);
+	$todo = $row['todo'];
+	$res->free();
+	
+	if ($todo > 0)
+	{
+		$first = false;
+	}
+	else
+	{
+		$first = true;
+	}
+	
 	/* WARNING:
 	 * list with "no ID" for objects are offline while they are updated and removed objects are NOT kept with online = 0 in the database
 	 */
@@ -800,10 +821,13 @@ function list_get_main(&$db, $source)
 		$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list_data` SET `online`='1' WHERE `online`='2'";
 	}
 	
-	$db->query($sql);
-	if($config['log'] > 2)
+	if($first)
 	{
-		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		$db->query($sql);
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
 	}
 	
 	// bilderwunsch
@@ -816,10 +840,13 @@ function list_get_main(&$db, $source)
 		$sql = "UPDATE `" . $config['dbprefix'] . $source . "_image_requested` SET `online`='1' WHERE `online`='2'";
 	}
 	
-	$db->query($sql);
-	if($config['log'] > 2)
+	if($first)
 	{
-		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		$db->query($sql);
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
 	}
 	
 	$articles = list_get_articles_list($db, $source);
@@ -850,6 +877,14 @@ function list_get_main(&$db, $source)
 				append_file("log/cron.txt","\n".date(DATE_RFC822)."\t error \t connection error \t wiki_get_main(".$url.")");
 			}
 			return "ERROR";
+		}
+		
+		// set online to 2
+		$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list` SET `online`='2' WHERE `article` LIKE '".$db->real_escape_string($article)."'";
+		$db->query($sql);
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 		}
 	}
 	

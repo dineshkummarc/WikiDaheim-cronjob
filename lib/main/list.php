@@ -241,18 +241,7 @@ function list_base_get_main(&$db, $source)
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t list_get_main()");
 	}
 	
-	$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list` SET `online`='1' WHERE `online`='2'";
-	$db->query($sql);
-	
-	if($config['log'] > 2)
-	{
-		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
-	}
-	
-	$articles = list_get_main_list($db, $source);
-	
-	
-	$sql = "SELECT `data` FROM `" . $config['dbprefix'] . "source_config` WHERE `key` LIKE 'api_url' AND `wiki` LIKE '" . $source . "'";
+	$sql = "SELECT count(`online`) AS `todo` FROM `" . $config['dbprefix'] . $source . "_list` WHERE `online` = 1";
 	$res = $db->query($sql);
 	
 	if($config['log'] > 2)
@@ -261,44 +250,78 @@ function list_base_get_main(&$db, $source)
 	}
 	
 	$row = $res->fetch_array(MYSQLI_ASSOC);
-	$api_url = $row['data'];
+	$todo = $row['todo'];
 	$res->free();
 	
-	foreach($articles as $article)
+	if ($todo == 0)
 	{
-		// api query
-		
-		$url = $api_url . '?action=query&list=embeddedin&format=xml&einamespace=0|4&eititle=' . urlencode($article) ."&continue";
-		
-		// read data and save to db
-		$continue = list_get_articles($db, $source, $url, $article);
-		while($continue != "") // loop while api gives data
+		$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list` SET `online`='1' WHERE `online`='2'";
+		$db->query($sql);
+	
+		if($config['log'] > 2)
 		{
-			if($continue == "connection error")
-			{
-				// log error
-				if($config['log'] > 0)
-				{
-					append_file("log/cron.txt","\n".date(DATE_RFC822)."\t error \t connection error \t list_get_main()");
-				}
-				return "ERROR";
-			}
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
+	
+		$articles = list_get_main_list($db, $source);
+	
+	
+		$sql = "SELECT `data` FROM `" . $config['dbprefix'] . "source_config` WHERE `key` LIKE 'api_url' AND `wiki` LIKE '" . $source . "'";
+		$res = $db->query($sql);
+	
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
+	
+		$row = $res->fetch_array(MYSQLI_ASSOC);
+		$api_url = $row['data'];
+		$res->free();
+	
+		foreach($articles as $article)
+		{
+			// api query
+		
+			$url = $api_url . '?action=query&list=embeddedin&format=xml&einamespace=0|4&eititle=' . urlencode($article) ."&continue";
+		
 			// read data and save to db
-			$continue = list_get_articles($db, $source, $url."=-||&eicontinue=".$continue, $article);
-		} // api loop
-	}
+			$continue = list_get_articles($db, $source, $url, $article);
+			while($continue != "") // loop while api gives data
+			{
+				if($continue == "connection error")
+				{
+					// log error
+					if($config['log'] > 0)
+					{
+						append_file("log/cron.txt","\n".date(DATE_RFC822)."\t error \t connection error \t list_get_main()");
+					}
+					return "ERROR";
+				}
+				// read data and save to db
+				$continue = list_get_articles($db, $source, $url."=-||&eicontinue=".$continue, $article);
+			} // api loop
+		}
 	
-	list_exclude_list($db, $source);
-	list_include_list($db, $source);
+		list_exclude_list($db, $source);
+		list_include_list($db, $source);
 	
-	// set online to 0
-	$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list` SET `online`='0' WHERE `online`='1'";
-	$db->query($sql);
+		// set online to 0
+		$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list` SET `online`='0' WHERE `online`='1'";
+		$db->query($sql);
 	
-	if($config['log'] > 2)
-	{
-		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
-	}
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
+	
+		$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list` SET `online`='1' WHERE `online`='2'";
+		$db->query($sql);
+	
+		if($config['log'] > 2)
+		{
+			append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
+		}
+	} // todo
 }
 
 ?>
