@@ -301,9 +301,9 @@ function list_base_get_main(&$db, $source)
 				$continue = list_get_articles($db, $source, $url."=-||&eicontinue=".$continue, $article);
 			} // api loop
 		}
-	
-		list_exclude_list($db, $source);
+
 		list_include_list($db, $source);
+		list_exclude_list($db, $source);
 	
 		// set online to 0
 		$sql = "UPDATE `" . $config['dbprefix'] . $source . "_list` SET `online`='0' WHERE `online`='1'";
