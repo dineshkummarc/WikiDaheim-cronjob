@@ -40,6 +40,17 @@ function request_get_article(&$db, $source, $url, $gemeinde, $features)
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t request_get_article()");
 	}
 	
+	// read data
+	$user_agent = $config['user_agent'];
+	ini_set('user_agent', $user_agent);
+	
+	$content = @file_get_contents($url);
+	if ($content === FALSE)
+	{
+		return "connection error";
+	}
+	
+	// delete old data
 	$sql = "DELETE FROM `" . $config['dbprefix'] . $source . "_external_data` WHERE `gemeinde`='".$gemeinde."'";
 
 	if($config['log'] > 2)
@@ -51,11 +62,7 @@ function request_get_article(&$db, $source, $url, $gemeinde, $features)
 		return "connection error";
 	}
 	
-	// read data
-	$user_agent = $config['user_agent'];
-	ini_set('user_agent', $user_agent);
-	
-	$content = @file_get_contents($url);
+	// save data
 	$data_array = explode("\n",$content);
 
 	for($lines = 1; $lines < count($data_array); $lines++)
