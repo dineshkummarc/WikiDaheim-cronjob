@@ -31,6 +31,7 @@ function commons_get_categorys_list(&$db)
 
 // !!! EXCLUDE TODO !!!
 /*
+Austrian TGW Future Cup
 Brut im Künstlerhaus
 Busts of
 Collections in
@@ -59,7 +60,8 @@ Views from
 */
 function exclude_subcat($title)
 {
-	if (strpos($title, 'Brut im Künstlerhaus') !== false) {return true;}
+	if (strpos($title, 'Austrian TGW Future Cup') !== false) {return true;}
+	else if (strpos($title, 'Brut im Künstlerhaus') !== false) {return true;}
 	else if (strpos($title, 'Brut im Künstlerhaus') !== false) {return true;}
 	else if (strpos($title, 'Busts of') !== false) {return true;}
 	else if (strpos($title, 'Collections in') !== false) {return true;}
