@@ -18,8 +18,8 @@ if ($db->connect_error)
 }
 else
 {
-	$source = "request";
-	if(request_get_main($db, $source) == "ERROR") // lib/external/base.php
+	$source = "bilderwunsch";
+	if(bilderwunsch_get_main($db, $source) == "ERROR") // lib/external/base.php
 	{
 		$db->close();
 		echo "ERROR";
