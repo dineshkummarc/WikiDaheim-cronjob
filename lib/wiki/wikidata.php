@@ -27,8 +27,144 @@ function wikidata_get_data(&$db, $url, $wikidata_id)
 		{
 			$latitude = $db->real_escape_string($data["entities"]["$wikidata_id"]["claims"]["P625"][0]["mainsnak"]["datavalue"]["value"]["latitude"]);
 			$longitude = $db->real_escape_string($data["entities"]["$wikidata_id"]["claims"]["P625"][0]["mainsnak"]["datavalue"]["value"]["longitude"]);
-			$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_data` SET latitude='".$latitude."', `longitude`='".$longitude."', `online`=4, `data_update` = CURRENT_TIMESTAMP WHERE `wikidata_id` LIKE '$wikidata_id' AND `online` LIKE '3'";
-			//echo $sql;
+			
+			$insert = "`latitude`=".$latitude.", `longitude`=".$longitude;
+			
+			if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["dewiki"]["url"]))
+			{
+				$article = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["dewiki"]["url"]);
+				if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["dewiki"]["title"]))
+				{
+					$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["dewiki"]["title"]);
+					$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+				}
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["dewikivoyage"]["url"]))
+			{
+				$article = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["dewikivoyage"]["url"]);
+				if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["dewikivoyage"]["title"]))
+				{
+					$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["dewikivoyage"]["title"]);
+					$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+				}
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["commonswiki"]["url"]))
+			{
+				$article = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["commonswiki"]["url"]);
+				if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["commonswiki"]["title"]))
+				{
+					$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["commonswiki"]["title"]);
+					$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+				}
+			}
+			
+			if(isset($data["entities"]["$wikidata_id"]["labels"]["de"]["value"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["labels"]["de"]["value"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["labels"]["en"]["value"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["labels"]["en"]["value"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			// no de/en lable
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["enwiki"]["title"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["enwiki"]["title"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["huwiki"]["title"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["huwiki"]["title"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["slwiki"]["title"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["slwiki"]["title"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["plwiki"]["title"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["plwiki"]["title"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["itwiki"]["title"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["itwiki"]["title"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["frwiki"]["title"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["frwiki"]["title"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["nlwiki"]["title"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["nlwiki"]["title"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["ukwiki"]["title"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["ukwiki"]["title"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["ruwiki"]["title"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["ruwiki"]["title"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["svwiki"]["title"]))
+			{
+				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
+				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["svwiki"]["title"]);
+				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+			}
+			/*else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["url"]))
+			{
+				$article = $data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["url"];
+				if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["title"]))
+				{
+					$sLabel = $data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["title"];
+					$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
+				}
+			}*/
+			
+			if(isset($data["entities"]["$wikidata_id"]["descriptions"]["de"]["value"]))
+			{
+				$description = $db->real_escape_string($data["entities"]["$wikidata_id"]["descriptions"]["de"]["value"]);
+				$insert .= ", `description`='" . $description . "'";
+			}
+			
+			
+			$insert .= ", `online`= 4";
+			// special ceb and no item
+			$items = sizeof($data["entities"]["$wikidata_id"]["sitelinks"]);
+			if($items==1)
+			{
+				if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["url"]))
+				{
+					$insert .= ", `online`= 5";
+				}
+			}
+			if($items==0)
+			{
+				$insert .= ", `online`= 5";
+			}
+			
+			$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_external_data` SET " . $insert . ", `data_update` = CURRENT_TIMESTAMP WHERE `wikidata_id` LIKE '$wikidata_id' AND `online` LIKE '3'";
+
 			$db->query($sql);
 
 			if($config['log'] > 2)
@@ -38,8 +174,7 @@ function wikidata_get_data(&$db, $url, $wikidata_id)
 		}
 		else
 		{
-			$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_data` SET `online`=5 WHERE `wikidata_id` LIKE '$wikidata_id' AND `online` LIKE '3'";
-			//echo $sql;
+			$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_external_data` SET `online`=5 WHERE `wikidata_id` LIKE '$wikidata_id' AND `online` LIKE '3'";
 			$db->query($sql);
 
 			if($config['log'] > 2)
@@ -50,8 +185,7 @@ function wikidata_get_data(&$db, $url, $wikidata_id)
 	}
 	else
 	{
-		$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_data` SET `online`=5 WHERE `wikidata_id` LIKE '$wikidata_id' AND `online` LIKE '3'";
-		//echo $sql;
+		$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_external_data` SET `online`=5 WHERE `wikidata_id` LIKE '$wikidata_id' AND `online` LIKE '3'";
 		$db->query($sql);
 
 		if($config['log'] > 2)
@@ -65,7 +199,7 @@ function wikidata_get_main(&$db)
 {
 	global $config;
 	
-	$sql = "SELECT `wikidata_id` FROM `" . $config['dbprefix'] . "wikidata_data` WHERE `online` = '3'";
+	$sql = "SELECT `wikidata_id` FROM `" . $config['dbprefix'] . "wikidata_external_data` WHERE `online` = '3'";
 	$res = $db->query($sql);
 	if($config['log'] > 2)
 	{
@@ -96,14 +230,14 @@ function wikidata_get_main(&$db)
 	}
 	
 	// delete old data
-	$sql = "DELETE FROM `" . $config['dbprefix'] . "wikidata_data` WHERE `online`='1'";
+	$sql = "DELETE FROM `" . $config['dbprefix'] . "wikidata_external_data` WHERE `online`='1'";
 	$db->query($sql);
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 	}
 	
-	$sql = "DELETE FROM `" . $config['dbprefix'] . "wikidata_data` WHERE `online`='5'";
+	$sql = "DELETE FROM `" . $config['dbprefix'] . "wikidata_external_data` WHERE `online`='5'";
 	$db->query($sql);
 	if($config['log'] > 2)
 	{
@@ -111,7 +245,7 @@ function wikidata_get_main(&$db)
 	}
 	
 	// show new data
-	$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_data` SET `online`='2' WHERE `online`='4'";
+	$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_external_data` SET `online`='2' WHERE `online`='4'";
 	$db->query($sql);
 	if($config['log'] > 2)
 	{

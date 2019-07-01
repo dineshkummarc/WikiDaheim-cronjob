@@ -39,14 +39,14 @@ function wikidata_get_article(&$db, $url)
 					{
 						if(array_key_exists("value", $element["_sLabel"]))
 						{
-							$sLabel = $db->real_escape_string($element["_sLabel"]["xml:lang"]) . ": " . $db->real_escape_string($element["_sLabel"]["value"]);
+							$sLabel = $db->real_escape_string($element["_sLabel"]["value"]);
 							$columns .= ", sLabel";
 							$values .= ", '$sLabel'";
 						}
 					}
 				}
 				
-				$sql = "INSERT INTO " . $config['dbprefix'] . "wikidata_data($columns) VALUES ($values)"; 
+				$sql = "INSERT INTO " . $config['dbprefix'] . "wikidata_external_data($columns) VALUES ($values)"; 
 				$db->query($sql);
 			
 				if($config['log'] > 2)
@@ -67,14 +67,14 @@ function wikidata_base_get_main(&$db)
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t wikidata_get_main()");
 	}
 	
-	$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_data` SET `online`='1' WHERE `online`='2'";
+	$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_external_data` SET `online`='1' WHERE `online`='2'";
 	$db->query($sql);
 	if($config['log'] > 2)
 	{
 		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t para \t sql: \t ".$sql);
 	}
 	
-	$sql = "SELECT `query` FROM `" . $config['dbprefix'] . "wikidata_main` WHERE `online` = '1'";
+	$sql = "SELECT `query` FROM `" . $config['dbprefix'] . "wikidata_external_main` WHERE `online` = '1'";
 	$res = $db->query($sql);
 	if($config['log'] > 2)
 	{

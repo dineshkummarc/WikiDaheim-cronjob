@@ -20,7 +20,7 @@ if ($db->connect_error)
 else
 {
 	// stop if active
-	$sql = "SELECT UNIX_TIMESTAMP(`data_update`) AS `lastedit` FROM `" . $config['dbprefix'] . "wikidata_data` ORDER BY `data_update` DESC LIMIT 0 , 1";
+	$sql = "SELECT UNIX_TIMESTAMP(`data_update`) AS `lastedit` FROM `" . $config['dbprefix'] . "wikidata_external_data` ORDER BY `data_update` DESC LIMIT 0 , 1";
 	$res = $db->query($sql);
 	if($config['log'] > 2)
 	{
@@ -42,7 +42,7 @@ else
 	}
 	else
 	{
-		$sql = "SELECT count(`online`) AS `todo` FROM `" . $config['dbprefix'] . "wikidata_data` WHERE `online` = 3 GROUP BY `online`";
+		$sql = "SELECT count(`online`) AS `todo` FROM `" . $config['dbprefix'] . "wikidata_external_data` WHERE `online` = 3 GROUP BY `online`";
 		$res = $db->query($sql);
 		if($config['log'] > 2)
 		{
