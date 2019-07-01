@@ -24,18 +24,21 @@ function bilderwunsch_get_article($db, $source, $url)
 
 	foreach ($data as $bw)
 	{
-		$article = $db->real_escape_string($bw["title"]);
+		$article = $db->real_escape_string(space($bw["title"]));
 		$latitude = round($db->real_escape_string($bw["lat"]),10);
 		$longitude = round($db->real_escape_string($bw["lon"]),10);
-		$description = $db->real_escape_string($bw["description"]);
+		$description = $db->real_escape_string(space($bw["description"]));
 		
 		// only in at
 		if(($latitude<=49)&($latitude>=46.3))
 		{
 			if(($longitude<=17.2)&($longitude>=9.5))
 			{
+				if($description=="")
+				{
+					$description = $article;
+				}
 				$sql = "INSERT INTO " . $config['dbprefix'] . $source . "_external_data(article,latitude,longitude,description,online,data_update) VALUES ('$article',$latitude,$longitude,'$description',4,CURRENT_TIMESTAMP)";
-		
 				$db->query($sql);
 				if($config['log'] > 2)
 				{
