@@ -470,7 +470,22 @@ function list_get_article(&$db, $source, $url, $article, $features)
 					}
 					else if(strpos($article, 'Linz') !== false)
 					{
-						$head_gemeinde = array("Linz");
+						if (strpos($article, 'Altenberg') !== false)
+						{
+							$head_gemeinde = explode(",",$edata[1]);
+						}
+						else if (strpos($article, 'Kirchschlag') !== false)
+						{
+							$head_gemeinde = explode(",",$edata[1]);
+						}
+						else if (strpos($article, 'Florian') !== false)
+						{
+							$head_gemeinde = explode(",",$edata[1]);
+						}
+						else
+						{
+							$head_gemeinde = array("Linz");
+						}
 					}
 					else
 					{
