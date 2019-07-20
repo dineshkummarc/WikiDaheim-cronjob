@@ -125,13 +125,13 @@ function wikidata_get_data(&$db, $url, $wikidata_id)
 				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["ruwiki"]["title"]);
 				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
 			}
-			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["svwiki"]["title"]))
+			/*else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["svwiki"]["title"]))
 			{
 				$article = "https://www.wikidata.org/wiki/" . $wikidata_id;
 				$sLabel = $db->real_escape_string($data["entities"]["$wikidata_id"]["sitelinks"]["svwiki"]["title"]);
 				$insert .= ", `article`='" . $article . "', `sLabel`='" . $sLabel . "'";
 			}
-			/*else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["url"]))
+			else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["url"]))
 			{
 				$article = $data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["url"];
 				if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["title"]))
@@ -148,20 +148,35 @@ function wikidata_get_data(&$db, $url, $wikidata_id)
 			}
 			
 			
-			$insert .= ", `online`= 4";
-			// special ceb and no item
+			// special ceb, sv and no item
+			$online = 4;
 			$items = sizeof($data["entities"]["$wikidata_id"]["sitelinks"]);
 			if($items==1)
 			{
 				if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["url"]))
 				{
-					$insert .= ", `online`= 5";
+					$online = 5;
+				}
+				else if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["svwiki"]["url"]))
+				{
+					$online = 5;
 				}
 			}
-			if($items==0)
+			else if($items==2)
 			{
-				$insert .= ", `online`= 5";
+				if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["cebwiki"]["url"]))
+				{
+					if(isset($data["entities"]["$wikidata_id"]["sitelinks"]["svwiki"]["url"]))
+					{
+						$online = 5;
+					}
+				}
 			}
+			else if($items==0)
+			{
+				$online = 5;
+			}
+			$insert .= ", `online`= " . $online;
 			
 			$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_external_data` SET " . $insert . ", `data_update` = CURRENT_TIMESTAMP WHERE `wikidata_id` LIKE '$wikidata_id' AND `online` LIKE '3'";
 
