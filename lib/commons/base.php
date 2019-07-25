@@ -62,7 +62,6 @@ function exclude_subcat($title)
 {
 	if (strpos($title, 'Austrian TGW Future Cup') !== false) {return true;}
 	else if (strpos($title, 'Brut im Künstlerhaus') !== false) {return true;}
-	else if (strpos($title, 'Brut im Künstlerhaus') !== false) {return true;}
 	else if (strpos($title, 'Busts of') !== false) {return true;}
 	else if (strpos($title, 'Collections in') !== false) {return true;}
 	else if (strpos($title, 'Collections of') !== false) {return true;}
@@ -549,7 +548,7 @@ function commons_get_fotos(&$db, $url, $api_url, $category, $main_category, $fea
 			else if($type == "file")
 			{
 				if(
-					($max == 3) ||
+					($max >= 2) ||
 					(substr($title, -4, -1)===".og") ||
 					(substr($title, -4)==".wav") ||
 					(substr($title, -5)==".flac") ||
