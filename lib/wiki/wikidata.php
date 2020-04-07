@@ -172,10 +172,10 @@ function wikidata_get_data(&$db, $url, $wikidata_id)
 					}
 				}
 			}
-			else if($items==0)
+/*			else if($items==0)
 			{
 				$online = 5;
-			}
+			}*/
 			$insert .= ", `online`= " . $online;
 			
 			$sql = "UPDATE `" . $config['dbprefix'] . "wikidata_external_data` SET " . $insert . ", `data_update` = CURRENT_TIMESTAMP WHERE `wikidata_id` LIKE '$wikidata_id' AND `online` LIKE '3'";
