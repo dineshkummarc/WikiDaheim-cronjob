@@ -719,6 +719,9 @@ function list_get_article(&$db, $source, $url, $article, $features)
 				}
 				$sql .= "'".$article."', '2', CURRENT_TIMESTAMP)";
 				
+				// bugfix overescaping
+				$sql = str_replace("\\\\\\\\\\\\\\","\\",$sql);
+				
 				$db->query($sql);
 				if($config['log'] > 2)
 				{
