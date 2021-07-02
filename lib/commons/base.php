@@ -63,6 +63,7 @@ function exclude_subcat($title)
 	if (strpos($title, 'Austrian TGW Future Cup') !== false) {return true;}
 	else if (strpos($title, 'Brut im Künstlerhaus') !== false) {return true;}
 	else if (strpos($title, 'Busts of') !== false) {return true;}
+	else if (strpos($title, 'Coaches of') !== false) {return true;}
 	else if (strpos($title, 'Collections in') !== false) {return true;}
 	else if (strpos($title, 'Collections of') !== false) {return true;}
 	else if (strpos($title, 'Crown jewels of Austria‎') !== false) {return true;}
@@ -76,9 +77,12 @@ function exclude_subcat($title)
 	else if (strpos($title, 'Imperial Regalia of the Holy Roman Empire‎') !== false) {return true;}
 	else if (strpos($title, 'Insignia of the Kingdom of Bohemia‎') !== false) {return true;}
 	else if (strpos($title, 'Interior of') !== false) {return true;}
+	else if (strpos($title, 'Matches of') !== false) {return true;}
 	else if (strpos($title, 'Painting by') !== false) {return true;}
 	else if (strpos($title, 'Paintings formerly in') !== false) {return true;}
 	else if (strpos($title, 'Palace of') !== false) {return true;}
+	else if (strpos($title, 'People of') !== false) {return true;}
+	else if (strpos($title, 'Players of') !== false) {return true;}
 	else if (strpos($title, 'Popfest Wien') !== false) {return true;}
 	else if (strpos($title, 'Portrait of') !== false) {return true;}
 	else if (strpos($title, 'Sculptures in') !== false) {return true;}
@@ -89,7 +93,7 @@ function exclude_subcat($title)
 	return false;
 }
 
-function commons_get_feature_alias_cat(&$db, $url, $base_category, $api_url, $feature, $max = 4)
+function commons_get_feature_alias_cat(&$db, $url, $base_category, $api_url, $feature, $max = 5)
 {
 	$max--;
 	global $config;
