@@ -320,6 +320,35 @@ function str_to_data($data)
 	return $data;
 }
 
+function wikidata_get_data(&$db, $url, $wikidata_id)
+{
+	global $config;
+	
+	if($config['log'] > 1)
+	{
+		append_file("log/cron.txt","\n".date(DATE_RFC822)."\t debug \t called: \t wikidata_get_data()");
+	}
+	
+	// read data
+	$user_agent = $config['user_agent'];
+	ini_set('user_agent', $user_agent);
+	
+	$content = @file_get_contents($url);
+	if ($content === FALSE)
+	{
+		return "connection error";
+	}
+	
+	$data = json_decode($content, true);
+	
+	if(isset($data["entities"]["$wikidata_id"]["claims"]["P9154"][0]["mainsnak"]["datavalue"]["value"]))
+	{
+		return $data["entities"]["$wikidata_id"]["claims"]["P9154"][0]["mainsnak"]["datavalue"]["value"]; 
+	}
+	
+	return "";
+}
+
 function list_get_article(&$db, $source, $url, $article, $features)
 {
 	global $config;
@@ -622,6 +651,21 @@ function list_get_article(&$db, $source, $url, $article, $features)
 										$edata[1] = $gemeinde[0];
 									
 									}
+									
+									// denkmalliste -> heris
+									if ($source == "denkmalliste")
+									{
+										if ($features_key == "wd-item")
+										{
+											$wikidata_id = $db->real_escape_string( wiki_to_dbhtml($edata[1]) );
+											$url = 'https://www.wikidata.org/wiki/Special:EntityData/' . $wikidata_id . '.json';
+											$heris = wikidata_get_data($db, $url, $wikidata_id);
+											
+											$sql_feature .= "`heris`, ";
+											$sql_value .= "'" . $heris . "', ";
+										}
+									}
+									
 									// normal
 									$sql_feature .= "`" . $features_key . "`, ";
 									$sql_value .= "'" . $db->real_escape_string( wiki_to_dbhtml($edata[1]) ) . "', ";
@@ -641,6 +685,7 @@ function list_get_article(&$db, $source, $url, $article, $features)
 					}
 				}
 			}
+			
 			
 			if($has_gemeinde == 0)
 			{
