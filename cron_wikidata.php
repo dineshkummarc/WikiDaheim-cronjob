@@ -33,7 +33,7 @@ else
 		$lastedit = (int) $row['lastedit'];
 	}
 	$res->free();
-	$now = (int) time() - 60;
+	$now = (int) time() - (60*10);
 	
 	if($lastedit >= $now)
 	{
